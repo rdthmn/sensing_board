@@ -718,6 +718,9 @@ unsigned char debug_getuc(void);
 /* Definition for ADCx's Channel */
 #define ADCx_CHANNEL                    ADC_CHANNEL_10
 
+#define NSS_Pin GPIO_PIN_5
+#define NSS_GPIO_Port GPIOB
+
 enum {
 	SAMPLES = 1024 // First sample ignored so add 1
 };
