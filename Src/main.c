@@ -62,8 +62,9 @@ uint8_t measureMode = OFF;
 uint16_t sample = 0;
 uint8_t tempOutput[3];
 extern uint8_t vibrationOutput[VIBE_SIZE];
-uint8_t payload[PAYLOAD_LENGTH];
+uint8_t payload[PAYLOAD_LENGTH], payload0[32];
 uint8_t flags = 0;
+uint16_t crc = 0;
 
 /* Private variables ---------------------------------------------------------*/
 ADC_HandleTypeDef hadc1;
@@ -73,6 +74,10 @@ I2C_HandleTypeDef hi2c1;
 SPI_HandleTypeDef hspi1;
 
 TIM_HandleTypeDef htim2;
+
+SX1272 node;
+
+Config_Group config;
 
 /* Private function prototypes -----------------------------------------------*/
 static void MX_GPIO_Init(void);
@@ -101,16 +106,30 @@ int main(void) {
 	MX_SPI1_Init();
 	ADC1_Init();
 
+	node.hspi = &hspi1;
+	node.config = &config;
+
+	sx1272_lora_init(&node);
+
+	  /* Dummy data */
+	payload0[0] = 0x55;
+	payload0[1] = 0x17;
+	payload0[2] = 0x22;
+	payload0[3] = 0x10;
+	payload0[4] = 0x34;
+	payload0[5] = 0x89;
+	payload0[6] = 0xA3;
+	payload0[7] = 0x5F;
+	for (int i = 8; i < 32; i++) {
+		payload0[i] = 0;
+	}
+
 	/* Infinite loop */
 	while (1) {
-
-		if (BRD_button_pushed()) {
-
-			process_measurements();
-		}
+		process_measurements();
 
 		/* Heartbeat*/
-		BRD_delay(50);
+		BRD_delay(500);
 		BRD_led_toggle();
 	}
 }
@@ -168,7 +187,7 @@ void process_measurements(void) {
 
 	/* Send payload */
 	if (measureMode == SEND_PACKET) {
-		//flags = sx1272_send(0x5, payload, PAYLOAD_LENGTH + HEADER_LENGTH, 1, 100);
+		flags = sx1272_send(0x5, payload0, 32 + HEADER_LENGTH, 1, 100);
 		measureMode = OFF;
 	}
 
@@ -271,6 +290,8 @@ static void MX_SPI1_Init(void)
 
   }
 }
+
+
 
 
 

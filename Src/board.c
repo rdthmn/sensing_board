@@ -210,16 +210,16 @@ void BRD_button_unpush(void) {
   */
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
-	if (GPIO_Pin == BUTTON_PIN) {
-
-		uint32_t current_time = HAL_GetTick();
-
-		/* Button debouncing */
-		if(current_time > buttonPressTime + DEBOUNCE_THRESHOLD){
-			button = !button;
-			buttonPressTime = current_time;
-		}
-	}
+//	if (GPIO_Pin == BUTTON_PIN) {
+//
+//		uint32_t current_time = HAL_GetTick();
+//
+//		/* Button debouncing */
+//		if(current_time > buttonPressTime + DEBOUNCE_THRESHOLD){
+//			button = !button;
+//			buttonPressTime = current_time;
+//		}
+//	}
 
 	if (GPIO_Pin == GPIO_PIN_13) {
 		HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
@@ -537,9 +537,9 @@ void TIM2_Init(void) {
 	TIM_MasterConfigTypeDef sMasterConfig = {0};
 
 	TimHandle.Instance = TIM2;
-	TimHandle.Init.Prescaler = 99;
+	TimHandle.Init.Prescaler = 95;
 	TimHandle.Init.CounterMode = TIM_COUNTERMODE_UP;
-	TimHandle.Init.Period = 15;
+	TimHandle.Init.Period = 16;
 	TimHandle.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
 
 	if (HAL_TIM_Base_Init(&TimHandle) != HAL_OK) {
